@@ -9,7 +9,7 @@ resource "aws_security_group" "efs_allow_access" {
     from_port        = 2049
     to_port          = 2049
     protocol         = "tcp"
-    cidr_blocks      = var.vpc_cidr_block
+    cidr_blocks      = ["${var.vpc_cidr_block}"]
   }
 
   egress {
