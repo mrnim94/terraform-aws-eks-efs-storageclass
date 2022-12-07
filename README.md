@@ -34,3 +34,56 @@ module "eks-efs-storageclass" {
   vpc_id = data.terraform_remote_state.eks.outputs.vpc_id
 }
 ```
+
+You can apply my example to testing:
+
+```yaml
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc1
+  labels:
+    name: pvc1
+spec:
+  storageClassName: efs-sc-nimtechnology
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: myapp
+spec:
+  selector:
+    matchLabels:
+      name: myapp
+  template:
+    metadata:
+      name: myapp
+      labels:
+        name: myapp
+    spec:
+      volumes:
+      # Khai báo VL sử dụng PVC
+      - name: myvolume
+        persistentVolumeClaim:
+          claimName: pvc1
+      containers:
+      - name: myapp
+        image: busybox
+        resources:
+          limits:
+            memory: "50Mi"
+            cpu: "500m"
+        command:
+          - sleep
+          - "600"
+        volumeMounts:
+        - mountPath: "/data"
+          name: myvolume
+```
