@@ -29,7 +29,7 @@ resource "aws_security_group" "efs_allow_access" {
 resource "aws_efs_file_system" "efs_file_system" {
   creation_token = "efs-$(var.efs_name)"
   tags = {
-    Name = "efs-$(var.efs_name)"
+    Name = "efs-${var.efs_name}"
   }
 }
 
