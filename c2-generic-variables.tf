@@ -50,6 +50,6 @@ variable "vpc_cidr_block" {
 
 variable "eks_private_subnets" {
   description = "EKS Private Subnet"
-  type = string
+  type = list(string)
   default = ""
 }
