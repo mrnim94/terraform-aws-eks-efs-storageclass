@@ -1,5 +1,7 @@
 # terraform-aws-eks-efs-storageclass
 
+If your eks cluster was set up by eks module, You can refer to below configuration.
+
 ```hcl
 # Input Variables
 # AWS Region
@@ -32,6 +34,29 @@ module "eks-efs-storageclass" {
   eks_private_subnets = data.terraform_remote_state.eks.outputs.private_subnets
   vpc_cidr_block = data.terraform_remote_state.eks.outputs.vpc_cidr_block
   vpc_id = data.terraform_remote_state.eks.outputs.vpc_id
+}
+```
+
+anything else
+
+```hcl
+data "aws_eks_cluster" "dev-nimtechnology-engines" {
+  name = var.cluster_id
+}
+
+
+module "eks-efs-csi-driver" {
+  source  = "mrnim94/eks-efs-csi-driver/aws"
+  version = "1.0.6"
+
+  aws_region = var.aws_region
+  environment = var.environment
+  business_divsion = var.business_divsion
+
+  eks_cluster_certificate_authority_data = data.aws_eks_cluster.dev-nimtechnology-engines.certificate_authority[0].data
+  eks_cluster_endpoint = data.aws_eks_cluster.dev-nimtechnology-engines.endpoint
+  eks_cluster_id = var.cluster_id
+  aws_iam_openid_connect_provider_arn = "arn:aws:iam::${element(split(":", "${data.aws_eks_cluster.dev-nimtechnology-engines.arn}"), 4)}:oidc-provider/${element(split("//", "${data.aws_eks_cluster.dev-nimtechnology-engines.identity[0].oidc[0].issuer}"), 1)}"
 }
 ```
 
